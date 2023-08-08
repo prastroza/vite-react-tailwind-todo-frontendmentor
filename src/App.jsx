@@ -1,65 +1,84 @@
-import CrossIcon from "./components/CrossIcon";
-import MoonIcon from "./components/MoonIcon";
+import CrossIcon from "./components/icons/IconCross";
+import Header from "./components/Header";
+import TodoCreate from "./components/TodoCreate";
+import TodoList from "./components/TodoList";
+import TodoComputed from "./components/TodoComputed";
+import TodoFilter from "./components/TodoFilter";
+import { useState } from "react";
 
+
+const initialStateTodos = [
+    { id: 1, title: "Complete On Line JavaScript bluuweb Curse", completed: true },
+    { id: 2, title: "Go to the Gym", completed: false },
+    { id: 3, title: "10 Minutes meditation", completed: true },
+    { id: 4, title: "Pick Up Groceries", completed: false },
+    { id: 5, title: "Complete todo app on FrontEnd Mentor", completed: false },
+];
 
 const App = () => {
     const fill = "#FFF"
-    return (
-        <div className="bg-[url(./assets/images/bg-mobile-light.jpg)] bg-no-repeat bg-contain bg-gray-300 min-h-screen">
-            <header className="container mx-auto px-4 mt-8">
-                <div className="flex justify-between">
-                    <h1 className="uppercase text-white text-3xl font-bold tracking-[0.3em]">
-                        Todo
-                    </h1>
-                    <button><MoonIcon fill= {fill} /></button>
-                </div>
-                <form className="bg-white rounded-md overflow-hidden py-4 flex gap-4 items-center  px-4 mt-8">
-                    <span className="rounded-full border-2 h-5 w-5 inline-block"></span>
-                    <input
-                        className="w-full text-gray-400 outline-none"
-                        type="text"
-                        placeholder="Crate a new todo..."
-                    />
-                </form>
-            </header>
 
+    const [todos, setTodos] = useState(initialStateTodos);
+
+    const createTodo = (title) => {
+        const newTodo = {
+            id: Date.now(),
+            title: title.trim(),
+            completed: false,
+        }
+
+        setTodos([...todos, newTodo]);
+    };
+
+    const removeTodo = (id) => {
+        setTodos(todos.filter((todo) => todo.id !== id));
+    };
+
+    const updateTodo = (id) => {
+        setTodos(todos.map(todo => todo.id === id ? {...todo,completed:!todo.completed} : todo));
+    };
+
+    const computedItemLeft = todos.filter((todo) => !todo.completed).length;
+
+    const clearCompleted = () => {
+        setTodos(todos.filter((todo) => !todo.completed ));
+    };
+
+    const [filter, setFilter] = useState("all");
+
+    const changeFilter = (filter) => setFilter(filter);
+
+    const filterTodos = () => {
+
+        switch (filter) {
+            case "all":
+                return todos;
+            case "active":
+                return todos.filter((todo) => !todo.completed);
+            case "completed":
+                return todos.filter((todo) => todo.completed);
+            default:
+                return todos;
+        }
+    }
+
+
+
+    return (
+        <div className="bg-[url(./assets/images/bg-mobile-light.jpg)] bg-no-repeat bg-contain bg-gray-300 min-h-screen dark:bg-slate-900
+                        dark:bg-[url(./assets/images/bg-mobile-dark.jpg)]  transition-all duration-1000
+        ">
+            <Header />
             <main className="container mx-auto px-4 mt-8">
-                <div className="bg-white rounded-md">
-                    <article className="flex gap-4 py-4 border-b border-b-gray-400">
-                        <button className="rounded-full border-2 h-5 w-5 inline-block flex-none"></button>
-                        <p className="text-gray-600 grow">Complite Online JavaScript course in bluuweb</p>
-                        <button className="flex-none">
-                            <CrossIcon />
-                        </button>
-                    </article>
-                    <article className="flex gap-4 py-4 border-b border-b-gray-400">
-                        <button className="rounded-full border-2 h-5 w-5 inline-block flex-none"></button>
-                        <p className="text-gray-600 grow">Complite Online JavaScript course in bluuweb</p>
-                        <button className="flex-none">
-                            <CrossIcon />
-                        </button>
-                    </article>
-                    <article className="flex gap-4 py-4 border-b border-b-gray-400">
-                        <button className="rounded-full border-2 h-5 w-5 inline-block flex-none"></button>
-                        <p className="text-gray-600 grow">Complite Online JavaScript course in bluuweb</p>
-                        <button className="flex-none">
-                            <CrossIcon />
-                        </button>
-                    </article>
-                    <section className="py-4 px-4 flex justify-between">
-                        <span className="text-gray-400">5 items left</span>
-                        <button className="text-gray-400">Clear Completed</button>
-                    </section>
-                </div>
+                <TodoCreate createTodo={createTodo}/>
+                <TodoList todos={filterTodos()}
+                         removeTodo={removeTodo}
+                         updateTodo={updateTodo}/>
+                <TodoComputed computedItemLeft={computedItemLeft} clearCompleted={clearCompleted}/>
+                <TodoFilter changeFilter={changeFilter} filter={filter}/>
             </main>
-            <section className="container mx-auto px-4 mt-8">
-                <div className="bg-white p-4 rounded-md flex justify-center gap-4">
-                    <button className=" hover:text-blue-600">All</button>
-                    <button className=" hover:text-blue-600">Active</button>
-                    <button className=" hover:text-blue-600">Completed</button>                    
-                </div>
-            </section>
-            <p className="text-center mt-8">Drag and Drop to reorder list</p>
+
+            <p className="text-center mt-8 dark:text-gray-400">Drag and Drop to reorder list</p>
         </div>
     );
 };
