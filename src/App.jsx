@@ -4,21 +4,27 @@ import TodoCreate from "./components/TodoCreate";
 import TodoList from "./components/TodoList";
 import TodoComputed from "./components/TodoComputed";
 import TodoFilter from "./components/TodoFilter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
-const initialStateTodos = [
-    { id: 1, title: "Complete On Line JavaScript bluuweb Curse", completed: true },
-    { id: 2, title: "Go to the Gym", completed: false },
-    { id: 3, title: "10 Minutes meditation", completed: true },
-    { id: 4, title: "Pick Up Groceries", completed: false },
-    { id: 5, title: "Complete todo app on FrontEnd Mentor", completed: false },
-];
+// const initialStateTodos = [
+//     { id: 1, title: "Complete On Line JavaScript bluuweb Curse", completed: true },
+//     { id: 2, title: "Go to the Gym", completed: false },
+//     { id: 3, title: "10 Minutes meditation", completed: true },
+//     { id: 4, title: "Pick Up Groceries", completed: false },
+//     { id: 5, title: "Complete todo app on FrontEnd Mentor", completed: false },
+// ];
+
+const initialStateTodos = JSON.parse(localStorage.getItem('todos')) || [];
 
 const App = () => {
     const fill = "#FFF"
 
     const [todos, setTodos] = useState(initialStateTodos);
+
+    useEffect(() => {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    },[todos]);
 
     const createTodo = (title) => {
         const newTodo = {
@@ -60,16 +66,15 @@ const App = () => {
             default:
                 return todos;
         }
-    }
-
-
+    };
 
     return (
         <div className="bg-[url(./assets/images/bg-mobile-light.jpg)] bg-no-repeat bg-contain bg-gray-300 min-h-screen dark:bg-slate-900
                         dark:bg-[url(./assets/images/bg-mobile-dark.jpg)]  transition-all duration-1000
+                        md:bg-[url(./assets/images/bg-desktop-light.jpg)] md:dark:bg-[url(./assets/images/bg-desktop-dark.jpg)]
         ">
             <Header />
-            <main className="container mx-auto px-4 mt-8">
+            <main className="container mx-auto px-4 mt-8 md:max-w-xl">
                 <TodoCreate createTodo={createTodo}/>
                 <TodoList todos={filterTodos()}
                          removeTodo={removeTodo}
